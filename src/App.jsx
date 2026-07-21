@@ -144,6 +144,8 @@ import Profile from './profile'
 import Swipe from './Swipe'
 import Matches from './Matches'
 import Chat from './Chat'
+import Nearby from './Nearby'
+
 
 function App() {
   const [session, setSession] = useState(null)
@@ -169,10 +171,17 @@ return (
     <button onClick={() => supabase.auth.signOut()}>Sign out</button>
     <Profile session={session} />
     <Swipe session={session} />
-    {activeChat ? (
+    {/* {activeChat ? (
   <Chat session={session} match={activeChat} onBack={() => setActiveChat(null)} />
 ) : (
   <Matches session={session} onSelectMatch={setActiveChat} />
+)}
+// remove Swipe and Matches imports if you don't want them anymore */}
+
+{activeChat ? (
+  <Chat session={session} match={activeChat} onBack={() => setActiveChat(null)} />
+) : (
+  <Nearby session={session} onOpenChat={setActiveChat} />
 )}
   </div>
 )
