@@ -3,27 +3,49 @@ import { supabase } from './supabaseClient'
 
 export default function Auth() {
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const [password, setPassword] = useState('')
+  const [isSignUp, setIsSignUp] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const { error } = await supabase.auth.signInWithOtp({ email })
-    if (error) alert(error.message)
-    else setSent(true)
+    setError('')
+
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password })
+      if (error) setError(error.message)
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) setError(error.message)
+    }
   }
 
-  if (sent) return <p>Check your email for the login link!</p>
-
   return (
-    <form onSubmit={handleLogin} style={{ padding: 40 }}>
-      <h2>Sign in</h2>
+    <form onSubmit={handleSubmit} style={{ padding: 40, maxWidth: 300 }}>
+      <h2>{isSignUp ? 'Sign up' : 'Sign in'}</h2>
       <input
         type="email"
         placeholder="you@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-      />
-      <button type="submit">Send magic link</button>
+        required
+      /><br /><br />
+      <input
+        type="password"
+        placeholder="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        minLength={6}
+      /><br /><br />
+      <button type="submit">{isSignUp ? 'Sign up' : 'Sign in'}</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <p>
+        {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        <button type="button" onClick={() => setIsSignUp(!isSignUp)}>
+          {isSignUp ? 'Sign in instead' : 'Sign up instead'}
+        </button>
+      </p>
     </form>
   )
 }
